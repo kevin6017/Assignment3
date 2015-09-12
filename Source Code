@@ -1,0 +1,82 @@
+/**
+ * @auther Kevin McMinn kmcminn@bsu.edu
+ * @version 1
+ */
+package esu.bsu.kmcminn;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Project3 {
+
+	public static void main(String[] args) throws FileNotFoundException {
+		ArrayList<String> strings = new ArrayList<String>();
+		ArrayList<StringReturn> stringReturn = new ArrayList<StringReturn>();
+
+		Scanner kb = new Scanner(System.in);
+		Scanner key;
+		while (true) {
+			System.out.println("What is your input file? Or type 'q' to exit");
+			String choice1 = kb.nextLine();
+			if (choice1.equalsIgnoreCase("q")){
+				System.exit(0);
+			}
+			//Adds each line to an arraylist of strings
+			key = new Scanner(new FileReader(choice1));
+			while (key.hasNextLine()) {
+				strings.add(key.nextLine());
+			}
+			System.out.println("Do you want to encrypt or decrypt? (E/D) ");
+			String choice = kb.nextLine();
+			System.out.println("What is the cypher integer? (Between 1 and 25)");
+			int adjustNum = Integer.parseInt(kb.nextLine());
+			while (true) {
+				if (adjustNum >= 1 && adjustNum <= 25) {
+					break;
+				} else
+					System.out.println("That is not an integer between 1 and 25");
+					System.out.println("What is the cypher integer? (Between 1 and 25)");
+					adjustNum = Integer.parseInt(kb.nextLine());
+
+			}
+			//for each element in strings arraylist, make a new StringReturn and add it to an array of StringReturns
+			for (String x : strings) {
+				StringReturn a = new StringReturn(x, adjustNum);
+				stringReturn.add(a);
+			}
+			//encrypt each element in stringReturn array
+			if (choice.equalsIgnoreCase("e")) {
+				for (StringReturn y : stringReturn) {
+					strings.set(stringReturn.indexOf(y), (y.encrypt()));
+				}
+			//decrypt each element in stringReturn array
+			} else if (choice.equalsIgnoreCase("d")) {
+				for (StringReturn y : stringReturn) {
+					strings.set(stringReturn.indexOf(y), (y.decrypt()));
+				}
+			System.out.println("Type a name and extension for the results file");
+			PrintWriter writer;
+			//Write each element in strings array to a user-defined file.
+			try {
+				writer = new PrintWriter(kb.nextLine(), "UTF-8");
+				for (String z : strings) {
+					writer.println(z);
+				}
+
+				writer.close();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			strings.clear();
+			stringReturn.clear();
+		}
+		kb.close();
+		key.close();
+	}
+
+	}
+}
