@@ -1,0 +1,120 @@
+package esu.bsu.kmcminn;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Project3Refactored {
+	
+	static ArrayList<String> sourceStringList = new ArrayList<String>();
+	static ArrayList<StringReturn> stringReturnList = new ArrayList<StringReturn>();
+	
+	static Scanner keyboard = new Scanner(System.in);
+	static Scanner fileScanner;
+	
+	static String encryptOrDecryptChoice;
+	
+	static int cypherAdjustNum;
+	
+	public static void main (String[] args) throws FileNotFoundException {
+		String fileName = getFileNameorExit();
+		buildSouceStringList (fileName);
+		encryptOrDecryptChoice = getEncryptorDecryptDecision();
+		cypherAdjustNum = getCypherAdjustNum();
+		stringReturnList = buildStringReturnListFromSource();
+		if(encryptOrDecryptChoice.equals("e")){
+			encrypt();
+		}
+		else if (encryptOrDecryptChoice.equals("d")){
+			decrypt();
+		}
+		
+		printFile();
+		
+		keyboard.close();
+		fileScanner.close();
+	}
+
+	private static String getFileNameorExit() {
+		System.out.println("Whis is your input file? Or type 'q' to exit");
+		String userFileName = keyboard.nextLine();
+		if (userFileName.equalsIgnoreCase("q")){
+			System.exit(0);
+		}
+		return userFileName;
+	}
+	
+	private static void buildSouceStringList(String fileName) throws FileNotFoundException {
+		fileScanner = new Scanner (new FileReader(fileName));
+		while (fileScanner.hasNextLine()){
+			sourceStringList.add(fileScanner.nextLine());
+		}
+	}
+	
+	private static String getEncryptorDecryptDecision() {
+		System.out.println("Do you want to encrypt or decrypt? (E/D)");
+		String decision = keyboard.nextLine();
+		if (decision.equalsIgnoreCase("e")){
+			return "e";
+		}
+		if (decision.equalsIgnoreCase("d")){
+			return "d";
+		}
+		else {
+			System.out.println("That is not a valid decision. Try again.");
+			return getEncryptorDecryptDecision();
+		}
+		
+	}
+	
+	private static int getCypherAdjustNum() {
+		System.out.println("What is the cypher integer? (Between 1 and 25)");
+		int adjustNum = Integer.parseInt(keyboard.nextLine());
+		if (adjustNum >= 1 && adjustNum <= 25){
+			return adjustNum;
+		}
+		else{
+			System.out.println("That is not an integer between 1 and 25. Try again");
+			return getCypherAdjustNum();
+		}
+	}
+	
+	private static ArrayList<StringReturn> buildStringReturnListFromSource() {
+		for (String x: sourceStringList){
+			StringReturn a = new StringReturn(x, cypherAdjustNum);
+			stringReturnList.add(a);
+		}
+		return stringReturnList;
+	}
+	
+	private static void encrypt() {
+		for (StringReturn y : stringReturnList){
+			sourceStringList.set(stringReturnList.indexOf(y), (y.encrypt()));
+		}
+	}
+	
+	private static void decrypt() {
+		for (StringReturn y : stringReturnList){
+			sourceStringList.set(stringReturnList.indexOf(y), (y.decrypt()));
+		}
+	}
+	
+	private static void printFile() {
+
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(keyboard.nextLine(), "UTF-8");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		for (String z :sourceStringList){
+			writer.println(z);
+		}
+		writer.close();
+	}
+}
